@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ExerciseGroups {
@@ -23,12 +24,12 @@ public class ExerciseGroups {
     public static void main(String[] args) {
         double averageTemperature = averageTemperature();
         System.out.println("AVG temp: " + averageTemperature);
-        if (averageTemperature == 16.25) {
+        if (averageTemperature == 13.75) {
             System.out.println("Zadanie 1 zrobione");
         }
 
         String[] meteoHistory = meteoHistory();
-        String[] expectedMeteoHistory = {"W Poniedziałek wiało mocny z wschod",
+        String[] expectedMeteoHistory = {"W Poniedzialek wiało mocny z wschod",
                 "W Wtorek wiało mocny z zachod",
                 "W Sroda wiało brak z brak",
                 "W Czwartek wiało sredni z polnoc"};
@@ -54,8 +55,8 @@ public class ExerciseGroups {
         }
         String someCodeFieldTypes = someCodeFieldTypes();
         String expectedSomeCodeFieldTypes =
-                "private int i = 0;\n" +
-                        "public BigDecimal abc = \"aaa\";\n" +
+                "private BigDecimal i = 0;\n" +
+                        "public String abc = \"aaa\";\n" +
                         "protected float mojaMetoda() {\n" +
                         "\n" +
                         "}\n" +
@@ -75,26 +76,71 @@ public class ExerciseGroups {
 
     //1. simpleString przetwórz tak, aby wyliczyć średnią temperaturę
     public static double averageTemperature() {
-        return 0;//ta linijka jest tylko po to, żeby nie podkreslało
+        String[] days = METEO_STRING.split("[\n]");
+        ArrayList<Integer> temperatures = new ArrayList<>();
+        for (int i = 0; i < days.length; i++) {
+            temperatures.add(Integer.parseInt(days[i].split("[\\W]")[1].substring(0,days[i].split("[\\W]")[1].length()-1)));
+        }
+        int temperaturesSum = 0;
+        for (Integer temp:temperatures) {
+            temperaturesSum += temp;
+        }
+
+        return (double)temperaturesSum/days.length;
     }
 
     //2. simpleString przetwórz tak, aby wyświetlić dla każdego rekordu "W <dzień tygodnia> wiało <siła wiatru> z <kierunek>"
     public static String[] meteoHistory() {
-        return new String[0];
+        String[] days = METEO_STRING.split("[\n]");
+
+        String[] meteoHistory = new String[days.length];
+        for (int i = 0; i < days.length; i++) {
+            StringBuilder dayInfo = new StringBuilder();
+            String[] temporaryInfo = days[i].split("[\\W]");
+            dayInfo.append("W ");
+            dayInfo.append(temporaryInfo[0]);
+            dayInfo.append(" wiało ");
+            dayInfo.append(temporaryInfo[temporaryInfo.length-1]);
+            dayInfo.append(" z ");
+            dayInfo.append(temporaryInfo[temporaryInfo.length-2]);
+            meteoHistory[i] = dayInfo.toString();
+        }
+        return meteoHistory;
     }
 
     //3. W SOME_CODE zamień wszystkie zasięgi (metod i pol) na prywatny
     public static String someCodePrivateScopes() {
-        return "";//ta linijka jest tylko po to, żeby nie podkreslało
+        String replacedPublic = SOME_CODE.replace("public","private");
+        String replacedPublicAndProtected = replacedPublic.replace("protected","private");
+        return replacedPublicAndProtected;
     }
 
     //4. W SOME_CODE Zamień typy wszystkich *pól* na BigDecimal
     public static String someCodeFieldTypes() {
-        return "";//ta linijka jest tylko po to, żeby nie podkreslało
+        String noInt = SOME_CODE.replace("int","BigDecimal");
+        String noIntNoDouble = noInt.replace("double","BigDecimal");
+        return noIntNoDouble;
     }
 
     //5. TAXI_STRINGS przetwórz tak, żeby wypisać dla każdego elementu listy wiadomość według szablonu: „Zamowienie na <gdzie klient zamawial taksowke>”
+    /*
+    private final static String[] TAXI_STRINGS = {"Poprosze taksowke na Dworzec",
+            "Taksowka pod Galerie szybko",
+            "Gdzie ta taksowka?Miala byc 30 minut temu na Sokolskiej",
+            "Platnosc karta za 3 minuty w Supersamie dziekuje"};
+     */
     public static String[] taxiOrder() {
-        return new String[0];//ta linijka jest tylko po to, żeby nie podkreslało
+        String[] places = new String[TAXI_STRINGS.length];
+        String[] taxiOrder = new String[TAXI_STRINGS.length];
+        for (int i = 0; i < TAXI_STRINGS.length; i++) {
+            String[] temp = TAXI_STRINGS[i].split(" ");
+            for (int j = 1; j < temp.length; j++) {
+                if (temp[j].matches("[A-Z].*")){
+                    places[i] = temp[j];
+                }
+            }
+            taxiOrder[i] = "Zamowienie na " + places[i];
+        }
+        return taxiOrder;
     }
 }
